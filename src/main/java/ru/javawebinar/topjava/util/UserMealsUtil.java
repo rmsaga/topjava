@@ -46,13 +46,14 @@ public class UserMealsUtil {
         for (UserMeal meal : meals) {
             LocalDate day = meal.getDateTime().toLocalDate();
             if (meal.getDateTime().toLocalTime().isAfter(startTime) && meal.getDateTime().toLocalTime().isBefore(endTime))
-                result.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), caloriesSummaryPerDay.get(day) > caloriesPerDay));
+                result.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(),
+                        caloriesSummaryPerDay.get(day) > caloriesPerDay));
         }
-
         return result;
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        // count statistics per day
         Map<LocalDate, IntSummaryStatistics> caloriesSummaryPerDay = meals
                 .stream().collect(
                         Collectors.groupingBy(meal -> meal.getDateTime().toLocalDate(),
@@ -64,7 +65,6 @@ public class UserMealsUtil {
                 .filter(meal -> meal.getDateTime().toLocalTime().isAfter(startTime) && meal.getDateTime().toLocalTime().isBefore(endTime))
                 .forEach(meal -> result.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(),
                         caloriesSummaryPerDay.get(meal.getDateTime().toLocalDate()).getSum() > caloriesPerDay)));
-
         return result;
     }
 
