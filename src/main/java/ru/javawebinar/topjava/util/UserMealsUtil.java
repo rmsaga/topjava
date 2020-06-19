@@ -31,9 +31,7 @@ public class UserMealsUtil {
         HashMap<String, Integer> caloriesSummaryPerDay = new HashMap<>();
         // count sum of calories per day
         for (UserMeal meal : meals) {
-            String key = String.valueOf(meal.getDateTime().getYear()) +
-                    meal.getDateTime().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) +
-                    meal.getDateTime().getDayOfMonth();
+            String key = meal.getDateTime().toLocalDate().toString();
             if (caloriesSummaryPerDay.containsKey(key)) {
                 caloriesSummaryPerDay.put(key, caloriesSummaryPerDay.get(key) + meal.getCalories());
             } else {
@@ -44,9 +42,7 @@ public class UserMealsUtil {
         List<UserMealWithExcess> result = new ArrayList<>();
         // generate result list
         for (UserMeal meal : meals) {
-            String key = String.valueOf(meal.getDateTime().getYear()) +
-                    meal.getDateTime().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) +
-                    meal.getDateTime().getDayOfMonth();
+            String key = meal.getDateTime().toLocalDate().toString();
             if (meal.getDateTime().toLocalTime().isAfter(startTime) && meal.getDateTime().toLocalTime().isBefore(endTime))
                 result.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), caloriesSummaryPerDay.get(key) > caloriesPerDay));
         }
