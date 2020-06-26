@@ -1,0 +1,18 @@
+table {
+    width: 70%;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid rgba(178, 177, 191, 0.84);
+    padding: 3px 7px 2px 7px;
+}
+
+th {
+    text-align: left;
+    padding: 5px;
+}
+
+.excess td {
+    background-color: rgba(255, 133, 106, 0.38);
+}
