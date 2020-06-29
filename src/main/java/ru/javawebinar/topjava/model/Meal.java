@@ -3,35 +3,49 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Meal {
 
-    private final LocalDateTime dateTime;
-
-    private final String description;
-
-    private final int calories;
+    private static AtomicInteger maxId = new AtomicInteger(0);
+    private final int id;
+    private LocalDateTime dateTime;
+    private String description;
+    private int calories;
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
+        id = maxId.incrementAndGet();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public LocalDateTime getDateTime() {
         return dateTime;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getCalories() {
         return calories;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
     }
 
     public LocalDate getDate() {
