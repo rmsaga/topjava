@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealStorage;
-import ru.javawebinar.topjava.model.MealStorageImplHardList;
+import ru.javawebinar.topjava.model.MealStorageImplHardMap;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
@@ -22,9 +22,16 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
 
     private static final Logger log = getLogger(MealServlet.class);
-    private MealStorage storage = new MealStorageImplHardList();
-    private int caloriesLimit = 2000;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private MealStorage storage;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        storage = new MealStorageImplHardMap();
+    }
+
+    private final int CALORIES_LIMIT = 2000;
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,7 +56,7 @@ public class MealServlet extends HttpServlet {
                 log.debug("Forwarding to create meal page...");
                 break;
             default:
-                List<MealTo> mealsTO = MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, caloriesLimit);
+                List<MealTo> mealsTO = MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, CALORIES_LIMIT);
                 log.debug("Adding mealsTO to request and forward to meals.jsp");
                 request.setAttribute("mealsTO", mealsTO);
                 request.getRequestDispatcher("meals.jsp").forward(request, response);
@@ -63,21 +70,17 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null) action = "default";
         log.debug("doPost action:" + action);
+        LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("date"), FORMATTER);
+        String description = request.getParameter("description");
+        int calories = Integer.parseInt(request.getParameter("calories"));
+        int id = request.getParameter("id").equals("Will be generated") ? 0 : Integer.parseInt(request.getParameter("id"));
+        Meal meal = new Meal(id, dateTime, description, calories);
         switch (action) {
             case "add":
-                LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("date"), formatter);
-                String description = request.getParameter("description");
-                int calories = Integer.parseInt(request.getParameter("calories"));
-                Meal meal = new Meal(0, dateTime, description, calories);
-                int id = storage.save(meal);
+                id = storage.save(meal);
                 log.debug("Added meal with id=" + id);
                 break;
             default:
-                id = Integer.parseInt(request.getParameter("id"));
-                dateTime = LocalDateTime.parse(request.getParameter("date"), formatter);
-                description = request.getParameter("description");
-                calories = Integer.parseInt(request.getParameter("calories"));
-                meal = new Meal(id, dateTime, description, calories);
                 storage.update(meal);
                 log.debug("Updated meal with id=" + id);
         }

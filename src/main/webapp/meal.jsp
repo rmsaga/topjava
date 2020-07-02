@@ -10,13 +10,13 @@
 <hr>
 <form method="POST" action='meals' name="frmAddUpdateMeal">
     <input type="hidden" name="action" value=${param.action}>
-    Meal ID : <input type="text" readonly="readonly" name="id"
+    Meal ID : <input type="hidden" readonly="readonly" name="id"
                      value="${meal.id == null ? "Will be generated" : meal.id}"/><br><br>
     Date : <input
         type="text" name="date"
         <fmt:parseDate value="${meal.getDateTime()}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
         <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" var="mealDate"/>
-        value="${mealDate}"/> <i>dd.MM.yyyy HH:mm</i><br><br>
+        value="${mealDate == null ? "dd.MM.yyyy HH:mm" : mealDate}"/> <br><br>
     Description : <input
         type="text" name="description"
         value="${meal.getDescription()}"/>

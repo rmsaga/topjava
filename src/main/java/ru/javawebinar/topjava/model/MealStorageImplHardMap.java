@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-public class MealStorageImplHardList implements MealStorage {
+public class MealStorageImplHardMap implements MealStorage {
 
     public Map<Integer, Meal> hardcodedMap = new ConcurrentHashMap<>();
     private AtomicInteger maxId = new AtomicInteger(7);
@@ -32,7 +33,7 @@ public class MealStorageImplHardList implements MealStorage {
                 new Meal(7,LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
-    public MealStorageImplHardList() {
+    public MealStorageImplHardMap() {
         hardcodedMap.putAll(testData);
     }
 
@@ -60,8 +61,6 @@ public class MealStorageImplHardList implements MealStorage {
 
     @Override
     public List<Meal> getAll() {
-        List<Meal> result = new ArrayList<>();
-        hardcodedMap.forEach((i,m) -> result.add(m));
-        return  result;
+        return  hardcodedMap.values().stream().collect(Collectors.toList());
     }
 }
