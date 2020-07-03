@@ -1,4 +1,6 @@
-package ru.javawebinar.topjava.model;
+package ru.javawebinar.topjava.dao;
+
+import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -8,32 +10,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-public class MealStorageImplHardMap implements MealStorage {
+public class MealStorageHardMap implements MealStorage {
+
+    public static Map<Integer, Meal> testData = new HashMap<>();
+
+    static {
+        testData.put(1,
+                new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
+        testData.put(2,
+                new Meal(2, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
+        testData.put(3,
+                new Meal(3, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
+        testData.put(4,
+                new Meal(4, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
+        testData.put(5,
+                new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
+        testData.put(6,
+                new Meal(6, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
+        testData.put(7,
+                new Meal(7, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+    }
 
     public Map<Integer, Meal> hardcodedMap = new ConcurrentHashMap<>();
     private AtomicInteger maxId = new AtomicInteger(7);
-    public static Map<Integer, Meal> testData = new HashMap<>();
-    static
-    {
-        testData.put(Integer.valueOf(1),
-                new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        testData.put(Integer.valueOf(2),
-                new Meal(2, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        testData.put(Integer.valueOf(3),
-                new Meal(3, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        testData.put(Integer.valueOf(4),
-                new Meal(4, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        testData.put(Integer.valueOf(5),
-                new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        testData.put(Integer.valueOf(6),
-                new Meal(6, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        testData.put(Integer.valueOf(7),
-                new Meal(7,LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
-    }
 
-    public MealStorageImplHardMap() {
+    public MealStorageHardMap() {
         hardcodedMap.putAll(testData);
     }
 
@@ -61,6 +63,6 @@ public class MealStorageImplHardMap implements MealStorage {
 
     @Override
     public List<Meal> getAll() {
-        return  hardcodedMap.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(hardcodedMap.values());
     }
 }

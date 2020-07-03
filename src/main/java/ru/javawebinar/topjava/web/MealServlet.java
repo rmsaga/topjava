@@ -1,9 +1,9 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import ru.javawebinar.topjava.dao.MealStorage;
+import ru.javawebinar.topjava.dao.MealStorageHardMap;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealStorage;
-import ru.javawebinar.topjava.model.MealStorageImplHardMap;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
@@ -22,16 +22,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
 
     private static final Logger log = getLogger(MealServlet.class);
+    private static final int CALORIES_LIMIT = 2000;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private MealStorage storage;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        storage = new MealStorageImplHardMap();
+        storage = new MealStorageHardMap();
     }
-
-    private final int CALORIES_LIMIT = 2000;
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
