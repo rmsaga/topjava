@@ -21,8 +21,44 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
-    <a href="meals?action=create">Add Meal</a>
-    <br><br>
+    <br>
+    <form method="get" action="meals">
+        <input type="hidden" name="action" value="filter">
+
+        <table>
+            <tr>
+                <td>
+                    <label>
+                        Start date:
+                        <input type="date" name="startDate" value="${param.startDate}">
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        End date:
+                        <input type="date" name="endDate" value="${param.endDate}">
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>
+                        Start time:
+                        <input type="time" name="startTime" value="${param.startTime}">
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        End time:
+                        <input type="time" name="endTime" value="${param.endTime}">
+                    </label>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <button type="submit">Filter</button>
+    </form>
+    <br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
@@ -34,7 +70,7 @@
         </tr>
         </thead>
         <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
             <tr class="${meal.excess ? 'excess' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
@@ -49,6 +85,8 @@
             </tr>
         </c:forEach>
     </table>
+    <br>
+    <a href="meals?action=create">Add Meal</a>
 </section>
 </body>
 </html>
