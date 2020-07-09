@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -25,7 +24,7 @@ public class InMemoryMealRepository implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(meal -> save(meal, meal.getUserId()));
+        MealsUtil.MEALS.forEach(meal -> save(meal, MealsUtil.USER_ID));
     }
 
     @Override
@@ -35,8 +34,8 @@ public class InMemoryMealRepository implements MealRepository {
             meal.setId(counter.incrementAndGet());
             userMeals.put(meal.getId(), meal);
             return meal;
-        } else if (meal.getUserId() != userId) {
-            log.info("Denied updating someome else's meal MealID={}", meal.getId());
+        } else if (!userMeals.containsKey(meal.getId())) {
+            log.info("Cannot update meal with id={}, meal doesn't exist or doesn't belong to user with userid={}", meal.getId(), userId);
         }
         // handle case: update, but not present in storage
         return userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
@@ -45,9 +44,9 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        Map<Integer, Meal> userMeals = usersMealsRepository.computeIfAbsent(userId, u -> new ConcurrentHashMap<>());
-        if (userMeals.get(id).getUserId() != userId) {
-            log.info("Denyed deleting someone else's meal. MealID={}", id);
+        Map<Integer, Meal> userMeals = usersMealsRepository.getOrDefault(userId, null);
+        if (userMeals == null || !userMeals.containsKey(id)) {
+            log.info("Cannot delete meal with id={}, meal doesn't exist or doesn't belong to user with userid={}", id, userId);
             return false;
         }
         return userMeals.remove(id) != null;
@@ -55,9 +54,9 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        Map<Integer, Meal> userMeals = usersMealsRepository.computeIfAbsent(userId, u -> new ConcurrentHashMap<>());
-        if (userMeals.get(id).getUserId() != userId) {
-            log.info("Getting someone else's meal was canceled. MealID={}", id);
+        Map<Integer, Meal> userMeals = usersMealsRepository.getOrDefault(userId, null);
+        if (userMeals == null || !userMeals.containsKey(id)) {
+            log.info("Cannot get meal with id={}, meal doesn't exist or doesn't belong to user with userid={}", id, userId);
             return null;
         }
         return userMeals.get(id);
@@ -65,21 +64,14 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        Map<Integer, Meal> userMeals = usersMealsRepository.computeIfAbsent(userId, u -> new ConcurrentHashMap<>());
-        return userMeals.values().stream()
-                .sorted((m1, m2) -> m2.getDateTime().compareTo(m1.getDateTime()))
-                .collect(Collectors.toList());
+        return MealsUtil.filterByPredicate(usersMealsRepository.getOrDefault(userId, null), meal -> true);
     }
 
     @Override
-    public Collection<Meal> get(LocalDate startDate, LocalDate endDate, int userId) {
-        Map<Integer, Meal> userMeals = usersMealsRepository.computeIfAbsent(userId, u -> new ConcurrentHashMap<>());
-        LocalDate min = (startDate == null) ? LocalDate.MIN : startDate.minusDays(1);
-        LocalDate max = (endDate == null) ? LocalDate.MAX : endDate.plusDays(1);
-        return userMeals.values().stream()
-                .filter(meal -> meal.getDate().isAfter(min) && meal.getDate().isBefore(max))
-                .sorted((m1, m2) -> m2.getDateTime().compareTo(m1.getDateTime()))
-                .collect(Collectors.toList());
+    public Collection<Meal> getAllByDate(LocalDate startDate, LocalDate endDate, int userId) {
+        return MealsUtil.filterByPredicate(usersMealsRepository.getOrDefault(userId, null),
+                meal -> meal.getDate().isAfter(startDate) && meal.getDate().isBefore(endDate));
+
     }
 }
 

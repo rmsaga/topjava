@@ -25,5 +25,23 @@ public class DateTimeUtil {
     public static LocalTime parseLocalTime(String localTime) {
         return StringUtils.isEmpty(localTime) ? null : LocalTime.parse(localTime);
     }
+
+    public static LocalDate getFilteredMinDate(LocalDate date) {
+        return date == null ? LocalDate.MIN : date.minusDays(1);
+    }
+
+    public static LocalDate getFilteredMaxDate(LocalDate date) {
+        return date == null ? LocalDate.MAX : date.plusDays(1);
+    }
+
+    public static LocalTime getFilteredMinTime(LocalTime time) {
+        return time == null ? LocalTime.MIN : time.minusNanos(1);
+    }
+
+    public static LocalTime getFilteredMaxTime(LocalTime time) {
+        return time == null ? LocalTime.MAX : time.plusNanos(1);
+    }
+
+
 }
 

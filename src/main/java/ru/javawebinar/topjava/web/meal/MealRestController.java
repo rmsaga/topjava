@@ -13,6 +13,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.DateTimeUtil.*;
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+
 @Controller
 public class MealRestController {
 
@@ -29,12 +33,11 @@ public class MealRestController {
         return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealTo> get(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+    public List<MealTo> getFiltered(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         log.debug("Getting filtered list for userId={}", SecurityUtil.authUserId());
-        LocalTime min = (startTime == null) ? LocalTime.MIN : startTime;
-        LocalTime max = (endTime == null) ? LocalTime.MAX : endTime;
-        return MealsUtil.getFilteredTos(service.get(startDate, endDate, SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay(),
-                min, max);
+        return MealsUtil.getFilteredTos(service.getAllByDate(getFilteredMinDate(startDate),
+                getFilteredMaxDate(endDate), SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay(),
+                getFilteredMinTime(startTime), getFilteredMaxTime(endTime));
     }
 
     public Meal get(int id) {
@@ -44,11 +47,13 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         log.debug("Creating mealId={} for userId={}", meal.getId(), SecurityUtil.authUserId());
+        checkNew(meal);
         return service.create(meal, SecurityUtil.authUserId());
     }
 
     public Meal update(Meal meal) {
         log.debug("Updating mealId={} for userId={}", meal.getId(), SecurityUtil.authUserId());
+        assureIdConsistent(meal, SecurityUtil.authUserId());
         return service.update(meal, SecurityUtil.authUserId());
     }
 

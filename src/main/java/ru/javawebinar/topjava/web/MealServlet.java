@@ -46,10 +46,14 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")), SecurityUtil.authUserId());
+                Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        mealRestController.update(meal);
+        if (meal.isNew()) {
+            mealRestController.create(meal);
+        } else {
+            mealRestController.update(meal);
+        }
         response.sendRedirect("meals");
     }
 
@@ -67,7 +71,7 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.authUserId()) :
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         mealRestController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
@@ -78,7 +82,7 @@ public class MealServlet extends HttpServlet {
                 LocalDate endtDate = DateTimeUtil.parseLocalDate(request.getParameter("endDate"));
                 LocalTime endTime = DateTimeUtil.parseLocalTime(request.getParameter("endTime"));
                 log.info("Filter from {} {} to {} {}", startDate, startTime, endtDate, endTime);
-                request.setAttribute("meals", mealRestController.get(startDate, startTime, endtDate, endTime));
+                request.setAttribute("meals", mealRestController.getFiltered(startDate, startTime, endtDate, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
 
                 break;
