@@ -79,10 +79,10 @@ public class MealServlet extends HttpServlet {
             case "filter":
                 LocalDate startDate = DateTimeUtil.parseLocalDate(request.getParameter("startDate"));
                 LocalTime startTime = DateTimeUtil.parseLocalTime(request.getParameter("startTime"));
-                LocalDate endtDate = DateTimeUtil.parseLocalDate(request.getParameter("endDate"));
+                LocalDate endDate = DateTimeUtil.parseLocalDate(request.getParameter("endDate"));
                 LocalTime endTime = DateTimeUtil.parseLocalTime(request.getParameter("endTime"));
-                log.info("Filter from {} {} to {} {}", startDate, startTime, endtDate, endTime);
-                request.setAttribute("meals", mealRestController.getFiltered(startDate, startTime, endtDate, endTime));
+                log.info("Filter from {} {} to {} {}", startDate, startTime, endDate, endTime);
+                request.setAttribute("meals", mealRestController.getFiltered(startDate, startTime, endDate, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
 
                 break;

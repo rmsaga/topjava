@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
@@ -44,8 +45,8 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        Map<Integer, Meal> userMeals = usersMealsRepository.getOrDefault(userId, null);
-        if (userMeals == null || !userMeals.containsKey(id)) {
+        Map<Integer, Meal> userMeals = usersMealsRepository.getOrDefault(userId, new ConcurrentHashMap<>());
+        if (!userMeals.containsKey(id)) {
             log.info("Cannot delete meal with id={}, meal doesn't exist or doesn't belong to user with userid={}", id, userId);
             return false;
         }
@@ -54,8 +55,8 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        Map<Integer, Meal> userMeals = usersMealsRepository.getOrDefault(userId, null);
-        if (userMeals == null || !userMeals.containsKey(id)) {
+        Map<Integer, Meal> userMeals = usersMealsRepository.getOrDefault(userId, new ConcurrentHashMap<>());
+        if (!userMeals.containsKey(id)) {
             log.info("Cannot get meal with id={}, meal doesn't exist or doesn't belong to user with userid={}", id, userId);
             return null;
         }
@@ -70,7 +71,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Collection<Meal> getAllByDate(LocalDate startDate, LocalDate endDate, int userId) {
         return MealsUtil.filterByPredicate(usersMealsRepository.getOrDefault(userId, null),
-                meal -> meal.getDate().isAfter(startDate) && meal.getDate().isBefore(endDate));
+                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate));
 
     }
 }
