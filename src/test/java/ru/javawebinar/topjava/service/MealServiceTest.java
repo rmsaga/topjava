@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -17,8 +18,14 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
-import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
+import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.UserTestData.USER;
+import static ru.javawebinar.topjava.UserTestData.getUpdated;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -40,18 +47,69 @@ public class MealServiceTest {
     private MealRepository repository;
 
     @Test
-    public void get() throws Exception {
+    public void getAnothersMeal() throws Exception {
         assertThrows(NotFoundException.class, () -> service.get(100003, UserTestData.ADMIN_ID));
     }
 
     @Test
-    public void delete() {
+    public void deleteAnothersMeal() {
         assertThrows(NotFoundException.class, () -> service.delete(100003, UserTestData.ADMIN_ID));
+    }
+
+    @Test
+    public void updateAnothersMeal() {
+        Meal updated = MealTestData.getUpdated();
+        assertThrows(NotFoundException.class, () -> service.update(updated, UserTestData.ADMIN_ID));
+    }
+
+    @Test
+    public void get() {
+        Meal meal = service.get(MEAL_ID, USER_ID);
+        assertThat(meal).isEqualTo(MEAL1);
+    }
+
+    @Test
+    public void getNotFound() throws Exception {
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND_MEAL, USER_ID));
+    }
+
+    @Test
+    public void getBetweenInclusive() {
+        List<Meal> filteredMeals = service.getBetweenInclusive(START_DATE, END_DATE, USER_ID);
+        assertThat(filteredMeals).isEqualTo(MEAL_FILTERED_BY_DATE);
+    }
+
+    @Test
+    public void getAll() {
+        List<Meal> meals = service.getAll(USER_ID);
+        assertThat(meals).isEqualTo(MEALS);
+    }
+
+    @Test
+    public void delete() {
+        service.delete(MEAL_ID, USER_ID);
+        assertNull(repository.get(MEAL_ID, USER_ID));
+    }
+
+    @Test
+    public void deletedNotFound() throws Exception {
+        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND_MEAL, USER_ID));
     }
 
     @Test
     public void update() {
         Meal updated = MealTestData.getUpdated();
-        assertThrows(NotFoundException.class, () -> service.update(updated, UserTestData.ADMIN_ID));
+        service.update(updated, USER_ID);
+        assertThat(service.get(MEAL_ID, USER_ID)).isEqualTo(updated);
+    }
+
+    @Test
+    public void create() {
+        Meal newMeal = MealTestData.getNew();
+        Meal created = service.create(newMeal, USER_ID);
+        Integer newId = created.getId();
+        newMeal.setId(newId);
+        assertThat(created).isEqualTo(newMeal);
+        assertThat(service.get(newId, USER_ID)).isEqualTo(newMeal);
     }
 }

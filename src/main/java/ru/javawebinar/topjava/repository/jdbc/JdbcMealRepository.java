@@ -17,6 +17,7 @@ import java.util.List;
 
 @Repository
 public class JdbcMealRepository implements MealRepository {
+
     private static final BeanPropertyRowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
     private final JdbcTemplate jdbcTemplate;
@@ -48,8 +49,8 @@ public class JdbcMealRepository implements MealRepository {
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate.update(
-                "UPDATE meals SET datetime=:datetime, description=:description, calories=:calories, " +
-                        "user_id=:user_id WHERE id=:id AND user_id=:user_id", map) == 0) {
+                "UPDATE meals SET datetime=:datetime, description=:description, " +
+                        "calories=:calories WHERE id=:id AND user_id=:user_id", map) == 0) {
             return null;
         }
         return meal;
