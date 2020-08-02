@@ -44,4 +44,11 @@ public class MealTestData {
         return new Meal(null, LocalDateTime.now(), "Food", 2020);
     }
 
+    public static void assertMatch(Meal actual, Meal expected) {
+        assertThat(actual).isEqualToComparingFieldByField(expected);
+    }
+
+    public static void assertMatch(List<Meal> actual, List<Meal> expected) {
+        assertThat(actual).usingFieldByFieldElementComparator().containsExactly((Meal[])expected.toArray());
+    }
 }

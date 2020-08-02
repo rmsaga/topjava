@@ -65,7 +65,7 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal meal = service.get(MEAL_ID, USER_ID);
-        assertThat(meal).isEqualToComparingFieldByField(MEAL1);
+        assertMatch(meal,MEAL1);
     }
 
     @Test
@@ -76,13 +76,13 @@ public class MealServiceTest {
     @Test
     public void getBetweenInclusive() {
         List<Meal> filteredMeals = service.getBetweenInclusive(START_DATE, END_DATE, USER_ID);
-        assertThat(filteredMeals).usingFieldByFieldElementComparator().containsExactly((Meal[])MEAL_FILTERED_BY_DATE.toArray());
+        assertMatch(filteredMeals,MEAL_FILTERED_BY_DATE);
     }
 
     @Test
     public void getAll() {
         List<Meal> meals = service.getAll(USER_ID);
-        assertThat(meals).usingFieldByFieldElementComparator().containsExactly((Meal[])MEALS.toArray());;
+        assertMatch(meals, MEALS);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MealServiceTest {
     public void update() {
         Meal updated = MealTestData.getUpdated();
         service.update(updated, USER_ID);
-        assertThat(service.get(MEAL_ID, USER_ID)).isEqualToComparingFieldByField(updated);
+        assertMatch(service.get(MEAL_ID, USER_ID),updated);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class MealServiceTest {
         Meal created = service.create(newMeal, USER_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
-        assertThat(created).isEqualToComparingFieldByField(newMeal);
-        assertThat(service.get(newId, USER_ID)).isEqualToComparingFieldByField(newMeal);
+        assertMatch(created,newMeal);
+        assertMatch(service.get(newId, USER_ID), newMeal);
     }
 }
