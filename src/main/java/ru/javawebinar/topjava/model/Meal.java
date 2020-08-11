@@ -1,6 +1,9 @@
 package ru.javawebinar.topjava.model;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,12 +14,14 @@ import java.time.LocalTime;
 public class Meal extends AbstractBaseEntity {
     @Column(name = "date_time", nullable = false)
     @NotNull
+    @NotBlank
     private LocalDateTime dateTime;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
+    @NotBlank
     private String description;
 
-    @Column(name = "calories")
+    @Column(name = "calories", nullable = false)
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)

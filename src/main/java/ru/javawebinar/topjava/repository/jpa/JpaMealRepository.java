@@ -13,12 +13,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
+@Transactional(readOnly = true)
 public class JpaMealRepository implements MealRepository {
 
     @PersistenceContext
     private EntityManager em;
 
     @Override
+    @Transactional
     public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
             User ref = em.getReference(User.class, userId);
@@ -32,6 +34,7 @@ public class JpaMealRepository implements MealRepository {
     }
 
     @Override
+    @Transactional
     public boolean delete(int id, int userId) {
         Query query = em.createQuery("DELETE FROM Meal m WHERE m.id=:id and m.user.id=:userId");
         return query
