@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.repository.jpa;
 
+import org.hibernate.jpa.QueryHints;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
@@ -55,7 +57,11 @@ public class JpaUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-        return null;
+        List<User> users = em.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email=?1", User.class)
+                .setParameter(1, email)
+                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+                .getResultList();
+        return DataAccessUtils.singleResult(users);
     }
 
     @Override

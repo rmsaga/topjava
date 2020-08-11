@@ -14,14 +14,14 @@ import java.time.LocalTime;
 public class Meal extends AbstractBaseEntity {
     @Column(name = "date_time", nullable = false)
     @NotNull
-    @NotBlank
     private LocalDateTime dateTime;
 
     @Column(name = "description", nullable = false)
-    @NotBlank
+    @NotNull
     private String description;
 
     @Column(name = "calories", nullable = false)
+    @NotNull
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
