@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.MealRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,8 +23,8 @@ public class JpaMealRepository implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
+        meal.setUser(em.getReference(User.class, userId));
         if (meal.isNew()) {
-            meal.setUser(em.getReference(User.class, userId));
             em.persist(meal);
             return meal;
         } else if (get(meal.id(), userId) == null) {
@@ -37,7 +36,7 @@ public class JpaMealRepository implements MealRepository {
     @Override
     @Transactional
     public boolean delete(int id, int userId) {
-        Query query = em.createQuery("DELETE FROM Meal m WHERE m.id=:id and m.user.id=:userId");
+        Query query = em.createNamedQuery(Meal.DELETE);
         return query
                 .setParameter("id", id)
                 .setParameter("userId", userId)
@@ -52,7 +51,7 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        Query query = em.createQuery("SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY m.dateTime DESC");
+        Query query = em.createNamedQuery(Meal.ALL_SORTED, Meal.class);
         return query
                 .setParameter("userId", userId)
                 .getResultList();
@@ -60,12 +59,7 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        Query query = em.createQuery(
-                "SELECT m FROM Meal m " +
-                        "WHERE m.user.id=:userId " +
-                        "AND m.dateTime >= :startDateTime AND m.dateTime < :endDateTime " +
-                        "ORDER BY m.dateTime DESC"
-        );
+        Query query = em.createNamedQuery(Meal.FILTERED, Meal.class);
         return query
                 .setParameter("userId", userId)
                 .setParameter("startDateTime", startDateTime)
