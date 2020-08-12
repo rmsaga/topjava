@@ -1,18 +1,24 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -29,6 +35,25 @@ public class MealServiceTest {
 
     @Autowired
     private MealService service;
+
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+
+    private static StringBuilder summary = new StringBuilder();
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String timeStatistic = String.format("%s пройден за %d мс", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            summary.append(timeStatistic + "\n");
+            log.info(timeStatistic);
+        }
+    };
+
+    @AfterClass
+    public static void printSummary() {
+        log.info(summary.toString());
+    }
 
     @Test
     public void delete() throws Exception {
