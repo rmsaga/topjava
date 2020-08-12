@@ -23,5 +23,5 @@ services:
 
 # https://docs.travis-ci.com/user/notifications#Configuring-email-notifications
 #notifications:
+<<<<<<< HEAD
 #  email: false
-#

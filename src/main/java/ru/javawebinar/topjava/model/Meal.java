@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.model;
 
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -12,6 +14,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "meals", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meals_unique_user_datetime_idx")})
 public class Meal extends AbstractBaseEntity {
+
     @Column(name = "date_time", nullable = false)
     @NotNull
     private LocalDateTime dateTime;
@@ -20,17 +23,17 @@ public class Meal extends AbstractBaseEntity {
     @NotNull
     private String description;
 
-    @Column(name = "calories", nullable = false)
+     @Column(name = "calories", nullable = false)
     @NotNull
     private int calories;
 
+    public Meal() {
+    }
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull
     private User user;
 
-    public Meal() {
-    }
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this(null, dateTime, description, calories);
