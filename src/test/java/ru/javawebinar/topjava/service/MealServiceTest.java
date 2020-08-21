@@ -79,7 +79,7 @@ public abstract class MealServiceTest extends AbstractServiceTest {
         service.update(updated, USER_ID);
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), getUpdated());
     }
-    @Ignore("Doesn't work in DATAJPA implementation ?!")
+
     @Test
     public void updateNotOwn() throws Exception {
         NotFoundException exception = assertThrows(NotFoundException.class, () -> service.update(MEAL1, ADMIN_ID));
