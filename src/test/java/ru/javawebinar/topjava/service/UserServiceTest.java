@@ -21,10 +21,10 @@ import java.util.List;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-public abstract class UserServiceTest extends AbstractServiceTest{
+public abstract class UserServiceTest extends AbstractServiceTest {
 
     @Autowired
-    private UserService service;
+    protected UserService service;
 
     @Autowired
     private CacheManager cacheManager;
@@ -90,4 +90,5 @@ public abstract class UserServiceTest extends AbstractServiceTest{
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, ADMIN, USER);
     }
+
 }
