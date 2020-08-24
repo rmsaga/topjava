@@ -31,7 +31,7 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        String[] contextConfigs = new String[]{"spring/spring-app.xml", "spring/spring-db.xml", "spring/spring-cache.xml"};
+        String[] contextConfigs = new String[]{"spring/spring-app.xml", "spring/spring-db.xml"};
         springContext = new ClassPathXmlApplicationContext(contextConfigs, false);
         springContext.getEnvironment().setActiveProfiles(Profiles.getActiveDbProfile(), Profiles.REPOSITORY_IMPLEMENTATION);
         springContext.refresh();
